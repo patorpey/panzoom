@@ -7,8 +7,14 @@
  * https://github.com/timmywil/panzoom/blob/master/MIT-License.txt
  *
  */
-import './polyfills'
 
+import {getDimensions, setStyle, setTransform, setTransition} from './css';
+import {destroyPointer, eventNames, onPointer} from './events';
+import isAttached from './isAttached';
+import isExcluded from './isExcluded';
+import isSVGElement from './isSVGElement';
+import {addPointer, getDistance, getMiddle, removePointer} from './pointers';
+import shallowClone from './shallowClone';
 import {
   PanOptions,
   PanzoomEvent,
@@ -16,15 +22,8 @@ import {
   PanzoomObject,
   PanzoomOptions,
   ZoomOptions
-} from './types'
-import { addPointer, getDistance, getMiddle, removePointer } from './pointers'
-import { destroyPointer, eventNames, onPointer } from './events'
-import { getDimensions, setStyle, setTransform, setTransition } from './css'
+} from './types';
 
-import isAttached from './isAttached'
-import isExcluded from './isExcluded'
-import isSVGElement from './isSVGElement'
-import shallowClone from './shallowClone'
 
 const defaultOptions: PanzoomOptions = {
   animate: false,
@@ -468,21 +467,27 @@ function Panzoom(
     addPointer(pointers, event)
     const current = getMiddle(pointers)
     if (pointers.length > 1) {
+      // #512 prevent zoom issue in mobile
+      if (startDistance === 0) {
+        startDistance = getDistance(pointers)
+      }
       // Use the distance between the first 2 pointers
       // to determine the current scale
       const diff = getDistance(pointers) - startDistance
       const toScale = constrainScale((diff * options.step) / 80 + startScale).scale
       zoomToPoint(toScale, current)
     }
-
-    pan(
-      origX + (current.clientX - startClientX) / scale,
-      origY + (current.clientY - startClientY) / scale,
-      {
-        animate: false
-      },
-      event
-    )
+    else {
+      // #512 added else condition to prevent mobile zoom focal point error
+      pan(
+        origX + (current.clientX - startClientX) / scale,
+        origY + (current.clientY - startClientY) / scale,
+        {
+          animate: false
+        },
+        event
+      )
+    }
   }
 
   function handleUp(event: PointerEvent) {
@@ -546,5 +551,5 @@ function Panzoom(
 
 Panzoom.defaultOptions = defaultOptions
 
-export { PanzoomObject, PanzoomOptions }
+export {PanzoomObject, PanzoomOptions};
 export default Panzoom
