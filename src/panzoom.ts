@@ -8,13 +8,13 @@
  *
  */
 
-import {getDimensions, setStyle, setTransform, setTransition} from './css';
-import {destroyPointer, eventNames, onPointer} from './events';
-import isAttached from './isAttached';
-import isExcluded from './isExcluded';
-import isSVGElement from './isSVGElement';
-import {addPointer, getDistance, getMiddle, removePointer} from './pointers';
-import shallowClone from './shallowClone';
+import { getDimensions, setStyle, setTransform, setTransition } from './css'
+import { destroyPointer, eventNames, onPointer } from './events'
+import isAttached from './isAttached'
+import isExcluded from './isExcluded'
+import isSVGElement from './isSVGElement'
+import { addPointer, getDistance, getMiddle, removePointer } from './pointers'
+import shallowClone from './shallowClone'
 import {
   PanOptions,
   PanzoomEvent,
@@ -22,8 +22,7 @@ import {
   PanzoomObject,
   PanzoomOptions,
   ZoomOptions
-} from './types';
-
+} from './types'
 
 const defaultOptions: PanzoomOptions = {
   animate: false,
@@ -476,8 +475,7 @@ function Panzoom(
       const diff = getDistance(pointers) - startDistance
       const toScale = constrainScale((diff * options.step) / 80 + startScale).scale
       zoomToPoint(toScale, current)
-    }
-    else {
+    } else {
       // #512 added else condition to prevent mobile zoom focal point error
       pan(
         origX + (current.clientX - startClientX) / scale,
@@ -551,5 +549,5 @@ function Panzoom(
 
 Panzoom.defaultOptions = defaultOptions
 
-export {PanzoomObject, PanzoomOptions};
+export { PanzoomObject, PanzoomOptions }
 export default Panzoom

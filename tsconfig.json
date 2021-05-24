@@ -4,7 +4,6 @@
   "compilerOptions": {
     "alwaysStrict": true,
     "esModuleInterop": true,
-    "jsx": "react",
     "module": "esnext",
     "moduleResolution": "node",
     "noImplicitAny": true,
@@ -13,6 +12,6 @@
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": false,
-    "target": "es2018"
+    "target": "es2019"
   }
 }

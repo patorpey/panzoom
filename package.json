@@ -10,7 +10,7 @@
   "scripts": {
     "build": "npm run clean && rollup --config && npm run minify",
     "clean": "rm -rf dist/",
-    "format": "eslint . --fix && prettier --write \"**/*.tsx\" \"**/*.ts\" \"**/*.js\" \"**/*.json\" \"**/*.md\"",
+    "format": "eslint . --fix && prettier --write \"src/**/*.tsx\" \"src/**/*.ts\" \"src/**/*.js\" \"**/*.json\" \"**/*.md\"",
     "lint": "concurrently --raw \"eslint .\" \"npm run prettier\" \"npm run typescript\"",
     "minify": "uglifyjs --compress --mangle --comments /Timmy/ --output dist/panzoom.min.js -- dist/panzoom.js && npm run sizeup",
     "prettier": "prettier --check \"**/*.md\" \"**/*.json\"",
@@ -85,12 +85,10 @@
     "parser": "@typescript-eslint/parser",
     "plugins": [
       "@typescript-eslint",
-      "react",
       "prettier"
     ],
     "extends": [
       "plugin:@typescript-eslint/recommended",
-      "plugin:react/recommended",
       "prettier"
     ],
     "parserOptions": {
@@ -98,16 +96,13 @@
       "sourceType": "module",
       "project": "./tsconfig.json",
       "ecmaFeatures": {
-        "jsx": true
+        "jsx": false
       }
     },
     "globals": {
       "ga": "readonly"
     },
     "settings": {
-      "react": {
-        "version": "detect"
-      }
     },
     "rules": {
       "no-unused-vars": "off",
@@ -129,7 +124,7 @@
   "eslintIgnore": [
     "node_modules/",
     "coverage/",
-    "demo/demo/",
+    "demo/",
     "demo/panzoom.js",
     "dist/",
     "docs/"
