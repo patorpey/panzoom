@@ -5,7 +5,7 @@
   "main": "dist/panzoom.js",
   "module": "dist/panzoom.es.js",
   "source": "src/panzoom",
-  "types": "dist/src/panzoom.d.ts",
+  "types": "dist/panzoom.d.ts",
   "private": true,
   "scripts": {
     "build": "npm run clean && rollup --config && npm run minify",
