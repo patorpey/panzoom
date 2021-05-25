@@ -192,6 +192,7 @@ export interface ZoomOnlyOptions {
    * to the parent dimensions.
    */
   focal?: { x: number; y: number }
+  point?: { x: number; y: number }
   /** The minimum scale when zooming */
   minScale?: number
   /** The maximum scale when zooming */

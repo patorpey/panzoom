@@ -511,7 +511,11 @@
           toScale = result.scale;
           let toX = x;
           let toY = y;
-          if (opts.focal) {
+          if (opts.point) {
+              toX = opts.point.x;
+              toY = opts.point.y;
+          }
+          else if (opts.focal) {
               // The difference between the point after the scale and the point before the scale
               // plus the current translation after the scale
               // neutralized to no scale (as the transform scale will apply to the translation)
