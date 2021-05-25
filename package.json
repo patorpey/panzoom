@@ -10,7 +10,7 @@
   "scripts": {
     "build": "npm run clean && rollup --config && npm run minify",
     "clean": "rm -rf dist/",
-    "format": "eslint . --fix && prettier --write \"src/**/*.tsx\" \"src/**/*.ts\" \"src/**/*.js\" \"**/*.json\" \"**/*.md\"",
+    "format": "eslint src --fix && prettier --write \"src/**/*.tsx\" \"src/**/*.ts\" \"src/**/*.js\" \"**/*.json\" \"**/*.md\"",
     "lint": "concurrently --raw \"eslint .\" \"npm run prettier\" \"npm run typescript\"",
     "minify": "uglifyjs --compress --mangle --comments /Timmy/ --output dist/panzoom.min.js -- dist/panzoom.js && npm run sizeup",
     "prettier": "prettier --check \"**/*.md\" \"**/*.json\"",

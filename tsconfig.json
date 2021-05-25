@@ -1,6 +1,6 @@
 {
   "exclude": ["dist"],
-  "include": ["src"],
+  "include": ["src", "test/unit"],
   "compilerOptions": {
     "alwaysStrict": true,
     "esModuleInterop": true,
