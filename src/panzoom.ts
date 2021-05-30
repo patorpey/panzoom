@@ -139,6 +139,8 @@ function Panzoom(
   let y = 0
   let scale = 1
   let isPanning = false
+  let lastAnimate = false
+  let dims: ReturnType<typeof getDimensions>
   zoom(options.startScale, { animate: false })
   // Wait for scale to update
   // for accurate dimensions
@@ -163,10 +165,13 @@ function Panzoom(
   ) {
     const value = { x, y, scale, isSVG, originalEvent }
     requestAnimationFrame(() => {
+      // VERIFY: Possible optimization: only setTransition setStyle if opts.animate has changed.
       if (typeof opts.animate === 'boolean') {
-        if (opts.animate) {
+        if (opts.animate && !lastAnimate) {
+          lastAnimate = true
           setTransition(elem, opts)
-        } else {
+        } else if (lastAnimate) {
+          lastAnimate = false
           setStyle(elem, 'transition', 'none')
         }
       }
@@ -179,7 +184,8 @@ function Panzoom(
 
   function setMinMax() {
     if (options.contain) {
-      const dims = getDimensions(elem)
+      // const dims = getDimensions(elem)
+      dims = getDimensions(elem)
       const parentWidth = dims.parent.width - dims.parent.border.left - dims.parent.border.right
       const parentHeight = dims.parent.height - dims.parent.border.top - dims.parent.border.bottom
       const elemWidth = dims.elem.width / scale
@@ -217,7 +223,7 @@ function Panzoom(
     }
 
     if (opts.contain === 'inside') {
-      const dims = getDimensions(elem)
+      // const dims = getDimensions(elem)
       result.x = Math.max(
         -dims.elem.margin.left - dims.parent.padding.left,
         Math.min(
@@ -243,7 +249,7 @@ function Panzoom(
         )
       )
     } else if (opts.contain === 'outside') {
-      const dims = getDimensions(elem)
+      // const dims = getDimensions(elem)
       const realWidth = dims.elem.width / scale
       const realHeight = dims.elem.height / scale
       const scaledWidth = realWidth * toScale
@@ -348,7 +354,7 @@ function Panzoom(
     zoomOptions?: ZoomOptions,
     originalEvent?: PanzoomEventDetail['originalEvent']
   ) {
-    const dims = getDimensions(elem)
+    // const dims = getDimensions(elem)
 
     // Instead of thinking of operating on the panzoom element,
     // think of operating on the area inside the panzoom
@@ -444,6 +450,7 @@ function Panzoom(
     options.handleStartEvent(event)
     origX = x
     origY = y
+    dims = getDimensions(elem)
 
     trigger('panzoomstart', { x, y, scale, isSVG, originalEvent: event }, options)
 
