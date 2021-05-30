@@ -3,44 +3,44 @@
 * Copyright Timmy Willison and other contributors
 * https://github.com/timmywil/panzoom/blob/master/MIT-License.txt
 */
-const isIE = typeof document !== 'undefined' && !!document.documentMode;
 /**
  * Lazy creation of a CSS style declaration
  */
-let divStyle;
-function createStyle() {
-    if (divStyle) {
-        return divStyle;
-    }
-    return (divStyle = document.createElement('div').style);
-}
+// let divStyle: CSSStyleDeclaration
+// function createStyle() {
+//   if (divStyle) {
+//     return divStyle
+//   }
+//   return (divStyle = document.createElement('div').style)
+// }
 /**
  * Proper prefixing for cross-browser compatibility
  */
-const prefixes = ['webkit', 'moz', 'ms'];
-const prefixCache = {};
-function getPrefixedName(name) {
-    if (prefixCache[name]) {
-        return prefixCache[name];
-    }
-    const divStyle = createStyle();
-    if (name in divStyle) {
-        return (prefixCache[name] = name);
-    }
-    const capName = name[0].toUpperCase() + name.slice(1);
-    let i = prefixes.length;
-    while (i--) {
-        const prefixedName = `${prefixes[i]}${capName}`;
-        if (prefixedName in divStyle) {
-            return (prefixCache[name] = prefixedName);
-        }
-    }
-}
+// const prefixes = ['webkit', 'moz', 'ms']
+// const prefixCache: { [key: string]: string } = {}
+// function getPrefixedName(name: string) {
+//   if (prefixCache[name]) {
+//     return prefixCache[name]
+//   }
+//   const divStyle = createStyle()
+//   if (name in divStyle) {
+//     return (prefixCache[name] = name)
+//   }
+//   const capName = name[0].toUpperCase() + name.slice(1)
+//   let i = prefixes.length
+//   while (i--) {
+//     const prefixedName = `${prefixes[i]}${capName}`
+//     if (prefixedName in divStyle) {
+//       return (prefixCache[name] = prefixedName)
+//     }
+//   }
+// }
 /**
  * Gets a style value expected to be a number
  */
 function getCSSNum(name, style) {
-    return parseFloat(style[getPrefixedName(name)]) || 0;
+    // return parseFloat(style[getPrefixedName(name) as any]) || 0
+    return parseFloat(style[name]) || 0;
 }
 function getBoxStyle(elem, name, style = window.getComputedStyle(elem)) {
     // Support: FF 68+
@@ -58,22 +58,24 @@ function getBoxStyle(elem, name, style = window.getComputedStyle(elem)) {
  */
 function setStyle(elem, name, value) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    elem.style[getPrefixedName(name)] = value;
+    // elem.style[getPrefixedName(name) as any] = value
+    elem.style[name] = value;
 }
 /**
  * Constructs the transition from panzoom options
  * and takes care of prefixing the transition and transform
  */
 function setTransition(elem, options) {
-    const transform = getPrefixedName('transform');
-    setStyle(elem, 'transition', `${transform} ${options.duration}ms ${options.easing}`);
+    // const transform = getPrefixedName('transform')
+    // setStyle(elem, 'transition', `${transform} ${options.duration}ms ${options.easing}`)
+    setStyle(elem, 'transition', `transform ${options.duration}ms ${options.easing}`);
 }
 /**
  * Set the transform using the proper prefix
  */
 function setTransform(elem, { x, y, scale, isSVG }, _options) {
     setStyle(elem, 'transform', `scale(${scale}) translate(${x}px, ${y}px)`);
-    if (isSVG && isIE) {
+    if (isSVG) {
         const matrixValue = window.getComputedStyle(elem).getPropertyValue('transform');
         elem.setAttribute('transform', matrixValue);
     }
@@ -159,15 +161,16 @@ function isAttached(elem) {
         doc.documentElement.contains(parent));
 }
 
-function getClass(elem) {
-    return (elem.getAttribute('class') || '').trim();
-}
+/* function getClass(elem: Element) {
+  return (elem.getAttribute('class') || '').trim()
+} */
 function hasClass(elem, className) {
-    return elem.nodeType === 1 && ` ${getClass(elem)} `.indexOf(` ${className} `) > -1;
+    // return elem.nodeType === 1 && ` ${getClass(elem)} `.indexOf(` ${className} `) > -1
+    return elem.classList.contains(className);
 }
 function isExcluded(elem, options) {
     for (let cur = elem; cur != null; cur = cur.parentNode) {
-        if (hasClass(cur, options.excludeClass) || options.exclude.indexOf(cur) > -1) {
+        if (hasClass(cur, options.excludeClass) || options.exclude.includes(cur)) {
             return true;
         }
     }
@@ -256,8 +259,7 @@ function getDistance(pointers) {
     }
     const event1 = pointers[0];
     const event2 = pointers[1];
-    return Math.sqrt(Math.pow(Math.abs(event2.clientX - event1.clientX), 2) +
-        Math.pow(Math.abs(event2.clientY - event1.clientY), 2));
+    return Math.sqrt((event2.clientX - event1.clientX) ** 2 + (event2.clientY - event1.clientY) ** 2);
 }
 
 function shallowClone(obj) {
@@ -375,6 +377,8 @@ function Panzoom(elem, options) {
     let y = 0;
     let scale = 1;
     let isPanning = false;
+    let lastAnimate = false;
+    let dims;
     zoom(options.startScale, { animate: false });
     // Wait for scale to update
     // for accurate dimensions
@@ -393,11 +397,14 @@ function Panzoom(elem, options) {
     function setTransformWithEvent(eventName, opts, originalEvent) {
         const value = { x, y, scale, isSVG, originalEvent };
         requestAnimationFrame(() => {
+            // VERIFY: Possible optimization: only setTransition setStyle if opts.animate has changed.
             if (typeof opts.animate === 'boolean') {
-                if (opts.animate) {
+                if (opts.animate && !lastAnimate) {
+                    lastAnimate = true;
                     setTransition(elem, opts);
                 }
-                else {
+                else if (lastAnimate) {
+                    lastAnimate = false;
                     setStyle(elem, 'transition', 'none');
                 }
             }
@@ -409,7 +416,8 @@ function Panzoom(elem, options) {
     }
     function setMinMax() {
         if (options.contain) {
-            const dims = getDimensions(elem);
+            // const dims = getDimensions(elem)
+            dims = getDimensions(elem);
             const parentWidth = dims.parent.width - dims.parent.border.left - dims.parent.border.right;
             const parentHeight = dims.parent.height - dims.parent.border.top - dims.parent.border.bottom;
             const elemWidth = dims.elem.width / scale;
@@ -439,7 +447,7 @@ function Panzoom(elem, options) {
             result.y = (opts.relative ? y : 0) + toY;
         }
         if (opts.contain === 'inside') {
-            const dims = getDimensions(elem);
+            // const dims = getDimensions(elem)
             result.x = Math.max(-dims.elem.margin.left - dims.parent.padding.left, Math.min(dims.parent.width -
                 dims.elem.width / toScale -
                 dims.parent.padding.left -
@@ -454,7 +462,7 @@ function Panzoom(elem, options) {
                 dims.parent.border.bottom, result.y));
         }
         else if (opts.contain === 'outside') {
-            const dims = getDimensions(elem);
+            // const dims = getDimensions(elem)
             const realWidth = dims.elem.width / scale;
             const realHeight = dims.elem.height / scale;
             const scaledWidth = realWidth * toScale;
@@ -534,7 +542,7 @@ function Panzoom(elem, options) {
         return zoomInOut(false, zoomOptions);
     }
     function zoomToPoint(toScale, point, zoomOptions, originalEvent) {
-        const dims = getDimensions(elem);
+        // const dims = getDimensions(elem)
         // Instead of thinking of operating on the panzoom element,
         // think of operating on the area inside the panzoom
         // element's parent
@@ -614,6 +622,7 @@ function Panzoom(elem, options) {
         options.handleStartEvent(event);
         origX = x;
         origY = y;
+        dims = getDimensions(elem);
         trigger('panzoomstart', { x, y, scale, isSVG, originalEvent: event }, options);
         // This works whether there are multiple
         // pointers or not
