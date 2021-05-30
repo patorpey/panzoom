@@ -141,7 +141,7 @@ function Panzoom(
   let scale = 1
   let isPanning = false
   let lastAnimate = false
-  let dims: ReturnType<typeof getDimensions>
+  let dims = getDimensions(elem)
   zoom(options.startScale, { animate: false })
   // Wait for scale to update
   // for accurate dimensions
