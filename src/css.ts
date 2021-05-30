@@ -1,46 +1,45 @@
 import { CurrentValues, PanzoomOptions } from './types'
 
-const isIE = typeof document !== 'undefined' && !!(document as any).documentMode
-
 /**
  * Lazy creation of a CSS style declaration
  */
-let divStyle: CSSStyleDeclaration
-function createStyle() {
-  if (divStyle) {
-    return divStyle
-  }
-  return (divStyle = document.createElement('div').style)
-}
+// let divStyle: CSSStyleDeclaration
+// function createStyle() {
+//   if (divStyle) {
+//     return divStyle
+//   }
+//   return (divStyle = document.createElement('div').style)
+// }
 
 /**
  * Proper prefixing for cross-browser compatibility
  */
-const prefixes = ['webkit', 'moz', 'ms']
-const prefixCache: { [key: string]: string } = {}
-function getPrefixedName(name: string) {
-  if (prefixCache[name]) {
-    return prefixCache[name]
-  }
-  const divStyle = createStyle()
-  if (name in divStyle) {
-    return (prefixCache[name] = name)
-  }
-  const capName = name[0].toUpperCase() + name.slice(1)
-  let i = prefixes.length
-  while (i--) {
-    const prefixedName = `${prefixes[i]}${capName}`
-    if (prefixedName in divStyle) {
-      return (prefixCache[name] = prefixedName)
-    }
-  }
-}
+// const prefixes = ['webkit', 'moz', 'ms']
+// const prefixCache: { [key: string]: string } = {}
+// function getPrefixedName(name: string) {
+//   if (prefixCache[name]) {
+//     return prefixCache[name]
+//   }
+//   const divStyle = createStyle()
+//   if (name in divStyle) {
+//     return (prefixCache[name] = name)
+//   }
+//   const capName = name[0].toUpperCase() + name.slice(1)
+//   let i = prefixes.length
+//   while (i--) {
+//     const prefixedName = `${prefixes[i]}${capName}`
+//     if (prefixedName in divStyle) {
+//       return (prefixCache[name] = prefixedName)
+//     }
+//   }
+// }
 
 /**
  * Gets a style value expected to be a number
  */
 export function getCSSNum(name: string, style: CSSStyleDeclaration) {
-  return parseFloat(style[getPrefixedName(name) as any]) || 0
+  // return parseFloat(style[getPrefixedName(name) as any]) || 0
+  return parseFloat(style[name as any]) || 0
 }
 
 function getBoxStyle(
@@ -64,7 +63,8 @@ function getBoxStyle(
  */
 export function setStyle(elem: HTMLElement | SVGElement, name: string, value: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  elem.style[getPrefixedName(name) as any] = value
+  // elem.style[getPrefixedName(name) as any] = value
+  elem.style[name as any] = value
 }
 
 /**
@@ -72,8 +72,9 @@ export function setStyle(elem: HTMLElement | SVGElement, name: string, value: st
  * and takes care of prefixing the transition and transform
  */
 export function setTransition(elem: HTMLElement | SVGElement, options: PanzoomOptions) {
-  const transform = getPrefixedName('transform')
-  setStyle(elem, 'transition', `${transform} ${options.duration}ms ${options.easing}`)
+  // const transform = getPrefixedName('transform')
+  // setStyle(elem, 'transition', `${transform} ${options.duration}ms ${options.easing}`)
+  setStyle(elem, 'transition', `transform ${options.duration}ms ${options.easing}`)
 }
 
 /**
@@ -85,7 +86,7 @@ export function setTransform(
   _options?: PanzoomOptions
 ) {
   setStyle(elem, 'transform', `scale(${scale}) translate(${x}px, ${y}px)`)
-  if (isSVG && isIE) {
+  if (isSVG) {
     const matrixValue = window.getComputedStyle(elem).getPropertyValue('transform')
     elem.setAttribute('transform', matrixValue)
   }

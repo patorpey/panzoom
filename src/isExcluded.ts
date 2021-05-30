@@ -1,16 +1,17 @@
 import { PanzoomOptions } from './types'
 
-function getClass(elem: Element) {
+/* function getClass(elem: Element) {
   return (elem.getAttribute('class') || '').trim()
-}
+} */
 
 function hasClass(elem: Element, className: string) {
-  return elem.nodeType === 1 && ` ${getClass(elem)} `.indexOf(` ${className} `) > -1
+  // return elem.nodeType === 1 && ` ${getClass(elem)} `.indexOf(` ${className} `) > -1
+  return elem.classList.contains(className)
 }
 
 export default function isExcluded(elem: Element, options: PanzoomOptions) {
   for (let cur = elem; cur != null; cur = cur.parentNode as Element) {
-    if (hasClass(cur, options.excludeClass) || options.exclude.indexOf(cur) > -1) {
+    if (hasClass(cur, options.excludeClass) || options.exclude.includes(cur)) {
       return true
     }
   }

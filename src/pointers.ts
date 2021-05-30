@@ -76,8 +76,5 @@ export function getDistance(pointers: PointerEvent[]) {
   }
   const event1 = pointers[0]
   const event2 = pointers[1]
-  return Math.sqrt(
-    Math.pow(Math.abs(event2.clientX - event1.clientX), 2) +
-      Math.pow(Math.abs(event2.clientY - event1.clientY), 2)
-  )
+  return Math.sqrt((event2.clientX - event1.clientX) ** 2 + (event2.clientY - event1.clientY) ** 2)
 }
