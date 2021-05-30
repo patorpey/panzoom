@@ -6,7 +6,8 @@ import { PanzoomOptions } from './types'
 
 function hasClass(elem: Element, className: string) {
   // return elem.nodeType === 1 && ` ${getClass(elem)} `.indexOf(` ${className} `) > -1
-  return elem.classList.contains(className)
+  return elem.nodeType === 1 && elem.classList.contains(className)
+  // return elem?.classList.contains(className)
 }
 
 export default function isExcluded(elem: Element, options: PanzoomOptions) {

@@ -172,7 +172,8 @@
   } */
   function hasClass(elem, className) {
       // return elem.nodeType === 1 && ` ${getClass(elem)} `.indexOf(` ${className} `) > -1
-      return elem.classList.contains(className);
+      return elem.nodeType === 1 && elem.classList.contains(className);
+      // return elem?.classList.contains(className)
   }
   function isExcluded(elem, options) {
       for (let cur = elem; cur != null; cur = cur.parentNode) {
