@@ -341,6 +341,7 @@
       // Set element styles
       elem.style.userSelect = 'none';
       elem.style.touchAction = options.touchAction;
+      elem.style.willChange = 'transform';
       // The default for HTML is '50% 50%'
       // The default for SVG is '0 0'
       // SVG can't be changed in IE
