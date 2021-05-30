@@ -24,16 +24,14 @@ export declare function setTransition(elem: HTMLElement | SVGElement, options: P
 export declare function setTransform(elem: HTMLElement | SVGElement, { x, y, scale, isSVG }: CurrentValues, _options?: PanzoomOptions): void;
 /**
  * Dimensions used in containment and focal point zooming
+ * The parent dimensions do not transform and are taken from getBoundingClientRect().
+ * The elem dimensions are untransformed.
  */
-export declare function getDimensions(elem: HTMLElement | SVGElement): {
+export declare function getDimensions(elem: HTMLElement | SVGGraphicsElement): {
     elem: {
         style: CSSStyleDeclaration;
         width: number;
         height: number;
-        top: number;
-        bottom: number;
-        left: number;
-        right: number;
         margin: {
             left: number;
             right: number;

@@ -94,12 +94,18 @@ export function setTransform(
 
 /**
  * Dimensions used in containment and focal point zooming
+ * The parent dimensions do not transform and are taken from getBoundingClientRect().
+ * The elem dimensions are untransformed.
  */
-export function getDimensions(elem: HTMLElement | SVGElement) {
+export function getDimensions(elem: HTMLElement | SVGGraphicsElement) {
   const parent = elem.parentNode as HTMLElement | SVGElement
   const style = window.getComputedStyle(elem)
   const parentStyle = window.getComputedStyle(parent)
-  const rectElem = elem.getBoundingClientRect()
+  // const rectElem = elem.getBoundingClientRect()
+  const rectElem =
+    elem instanceof SVGGraphicsElement
+      ? elem.getBBox()
+      : { width: elem.offsetWidth, height: elem.offsetHeight }
   const rectParent = parent.getBoundingClientRect()
 
   return {
@@ -107,10 +113,10 @@ export function getDimensions(elem: HTMLElement | SVGElement) {
       style,
       width: rectElem.width,
       height: rectElem.height,
-      top: rectElem.top,
-      bottom: rectElem.bottom,
-      left: rectElem.left,
-      right: rectElem.right,
+      // top: rectElem.top,
+      // bottom: rectElem.bottom,
+      // left: rectElem.left,
+      // right: rectElem.right,
       margin: getBoxStyle(elem, 'margin', style),
       border: getBoxStyle(elem, 'border', style)
     },

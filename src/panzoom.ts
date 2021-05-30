@@ -54,7 +54,7 @@ const defaultOptions: PanzoomOptions = {
 }
 
 function Panzoom(
-  elem: HTMLElement | SVGElement,
+  elem: HTMLElement | SVGGraphicsElement,
   options?: Omit<PanzoomOptions, 'force'>
 ): PanzoomObject {
   if (!elem) {
@@ -189,8 +189,10 @@ function Panzoom(
       dims = getDimensions(elem)
       const parentWidth = dims.parent.width - dims.parent.border.left - dims.parent.border.right
       const parentHeight = dims.parent.height - dims.parent.border.top - dims.parent.border.bottom
-      const elemWidth = dims.elem.width / scale
-      const elemHeight = dims.elem.height / scale
+      // const elemWidth = dims.elem.width / scale
+      // const elemHeight = dims.elem.height / scale
+      const elemWidth = dims.elem.width
+      const elemHeight = dims.elem.height
       const elemScaledWidth = parentWidth / elemWidth
       const elemScaledHeight = parentHeight / elemHeight
       if (options.contain === 'inside') {
@@ -229,7 +231,8 @@ function Panzoom(
         -dims.elem.margin.left - dims.parent.padding.left,
         Math.min(
           dims.parent.width -
-            dims.elem.width / toScale -
+            // dims.elem.width / toScale -
+            dims.elem.width -
             dims.parent.padding.left -
             dims.elem.margin.left -
             dims.parent.border.left -
@@ -241,7 +244,8 @@ function Panzoom(
         -dims.elem.margin.top - dims.parent.padding.top,
         Math.min(
           dims.parent.height -
-            dims.elem.height / toScale -
+            // dims.elem.height / toScale -
+            dims.elem.height -
             dims.parent.padding.top -
             dims.elem.margin.top -
             dims.parent.border.top -
@@ -251,8 +255,10 @@ function Panzoom(
       )
     } else if (opts.contain === 'outside') {
       // const dims = getDimensions(elem)
-      const realWidth = dims.elem.width / scale
-      const realHeight = dims.elem.height / scale
+      // const realWidth = dims.elem.width / scale
+      // const realHeight = dims.elem.height / scale
+      const realWidth = dims.elem.width
+      const realHeight = dims.elem.height
       const scaledWidth = realWidth * toScale
       const scaledHeight = realHeight * toScale
       const diffHorizontal = (scaledWidth - realWidth) / 2
@@ -394,8 +400,10 @@ function Panzoom(
     // Adjust the clientX/clientY for HTML elements,
     // because they have a transform-origin of 50% 50%
     if (!isSVG) {
-      clientX -= dims.elem.width / scale / 2
-      clientY -= dims.elem.height / scale / 2
+      // clientX -= dims.elem.width / scale / 2
+      // clientY -= dims.elem.height / scale / 2
+      clientX -= dims.elem.width / 2
+      clientY -= dims.elem.height / 2
     }
 
     // Convert the mouse point from it's position over the

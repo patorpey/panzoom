@@ -8,7 +8,7 @@
  *
  */
 import { PanzoomObject, PanzoomOptions } from './types';
-declare function Panzoom(elem: HTMLElement | SVGElement, options?: Omit<PanzoomOptions, 'force'>): PanzoomObject;
+declare function Panzoom(elem: HTMLElement | SVGGraphicsElement, options?: Omit<PanzoomOptions, 'force'>): PanzoomObject;
 declare namespace Panzoom {
     var defaultOptions: PanzoomOptions;
 }
