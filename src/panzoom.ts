@@ -167,14 +167,13 @@ function Panzoom(
     const value = { x, y, scale, isSVG, originalEvent }
     requestAnimationFrame(() => {
       // VERIFY: Possible optimization: only setTransition setStyle if opts.animate has changed.
-      if (typeof opts.animate === 'boolean') {
-        if (opts.animate && !lastAnimate) {
-          lastAnimate = true
+      if (typeof opts.animate === 'boolean' && opts.animate !== lastAnimate) {
+        if (opts.animate) {
           setTransition(elem, opts)
-        } else if (!opts.animate && lastAnimate) {
-          lastAnimate = false
+        } else {
           setStyle(elem, 'transition', 'none')
         }
+        lastAnimate = opts.animate
       }
       opts.setTransform(elem, value, opts)
     })
@@ -325,8 +324,19 @@ function Panzoom(
     let toY = y
 
     if (opts.point) {
-      toX = opts.point.x
-      toY = opts.point.y
+      // toX = opts.point.x
+      // toY = opts.point.y
+      dims = getDimensions(elem)
+      toX =
+        dims.elem.width / 2 -
+        opts.point.x -
+        dims.elem.width / 2 / toScale +
+        dims.parent.width / 2 / toScale
+      toY =
+        dims.elem.height / 2 -
+        opts.point.y -
+        dims.elem.height / 2 / toScale +
+        dims.parent.height / 2 / toScale
     } else if (opts.focal) {
       // The difference between the point after the scale and the point before the scale
       // plus the current translation after the scale
