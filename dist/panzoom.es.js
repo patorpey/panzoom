@@ -410,7 +410,7 @@ function Panzoom(elem, options) {
                     lastAnimate = true;
                     setTransition(elem, opts);
                 }
-                else if (lastAnimate) {
+                else if (!opts.animate && lastAnimate) {
                     lastAnimate = false;
                     setStyle(elem, 'transition', 'none');
                 }
