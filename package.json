@@ -22,7 +22,7 @@
     "typescript": "tsc -p tsconfig.json --noEmit"
   },
   "files": [
-    "MIT-License.txt",
+    "LICENSE.txt",
     "src",
     "dist",
     "README.md"
@@ -35,7 +35,7 @@
     "dragging",
     "drag"
   ],
-  "repository": "timmywil/panzoom",
+  "repository": "patorpey/panzoom",
   "license": "MIT",
   "author": {
     "name": "Timmy Willison",
