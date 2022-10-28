@@ -190,8 +190,8 @@ function Panzoom(
       const parentHeight = dims.parent.height - dims.parent.border.top - dims.parent.border.bottom
       // const elemWidth = dims.elem.width / scale
       // const elemHeight = dims.elem.height / scale
-      const elemWidth = dims.elem.width
-      const elemHeight = dims.elem.height
+      const elemWidth = dims.elem.width || 1
+      const elemHeight = dims.elem.height || 1
       const elemScaledWidth = parentWidth / elemWidth
       const elemScaledHeight = parentHeight / elemHeight
       if (options.contain === 'inside') {
