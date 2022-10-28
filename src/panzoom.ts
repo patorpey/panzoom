@@ -176,9 +176,9 @@ function Panzoom(
         lastAnimate = opts.animate
       }
       opts.setTransform(elem, value, opts)
+      trigger(eventName, value, opts)
+      trigger('panzoomchange', value, opts)
     })
-    trigger(eventName, value, opts)
-    trigger('panzoomchange', value, opts)
     return value
   }
 
