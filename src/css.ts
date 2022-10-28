@@ -1,4 +1,4 @@
-import { CurrentValues, PanzoomOptions } from './types'
+import {CurrentValues, PanzoomOptions} from './types'
 
 /**
  * Lazy creation of a CSS style declaration
@@ -85,7 +85,7 @@ export function setTransform(
   { x, y, scale, isSVG }: CurrentValues,
   _options?: PanzoomOptions
 ) {
-  setStyle(elem, 'transform', `scale(${scale}) translate(${x}px, ${y}px)`)
+  setStyle(elem, 'transform', `translate(${scale * x}px, ${scale * y}px) scale(${scale})`)
   if (isSVG) {
     const matrixValue = window.getComputedStyle(elem).getPropertyValue('transform')
     elem.setAttribute('transform', matrixValue)
