@@ -1,4 +1,4 @@
-import { setTransform } from './css'
+import {setTransform} from './css'
 
 export type PanzoomEvent =
   | 'panzoomstart'
@@ -180,6 +180,14 @@ export interface PanOnlyOptions {
   relative?: boolean
   /** Disable panning while the scale is equal to the starting value */
   panOnlyWhenZoomed?: boolean
+  /** Round x and y values to whole numbers.
+   * This can help prevent images and text from looking blurry,
+   * but the higher the scale, the more it becomes
+   * necessary to use fractional pixels.
+   * Use your own judgement on how much to limit
+   * zooming in when using this option.
+   */
+  roundPixels?: boolean
 }
 
 export interface ZoomOnlyOptions {
