@@ -142,13 +142,13 @@ function Panzoom(
   let isPanning = false
   let lastAnimate = false
   let dims = getDimensions(elem)
-  zoom(options.startScale, { animate: false })
+  zoom(options.startScale, { animate: false, force: true })
   // Wait for scale to update
   // for accurate dimensions
   // to constrain initial values
   setTimeout(() => {
     setMinMax()
-    pan(options.startX, options.startY, { animate: false })
+    pan(options.startX, options.startY, { animate: false, force: true })
   })
 
   function trigger(eventName: PanzoomEvent, detail: PanzoomEventDetail, opts: PanzoomOptions) {
