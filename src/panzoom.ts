@@ -556,5 +556,5 @@ function Panzoom(
 
 Panzoom.defaultOptions = defaultOptions
 
-export {PanzoomObject, PanzoomOptions}
+export * from './types'
 export default Panzoom
