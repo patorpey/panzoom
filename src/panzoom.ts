@@ -225,8 +225,8 @@ function Panzoom(
     }
 
     if (opts.contain) {
-      const realWidth = dims.elem.width / scale
-      const realHeight = dims.elem.height / scale
+      const realWidth = dims.elem.width
+      const realHeight = dims.elem.height
       const scaledWidth = realWidth * toScale
       const scaledHeight = realHeight * toScale
       const diffHorizontal = (scaledWidth - realWidth) / 2
