@@ -80,7 +80,7 @@
    * Set the transform using the proper prefix
    */
   function setTransform(elem, { x, y, scale, isSVG }, _options) {
-      setStyle(elem, 'transform', `scale(${scale}) translate(${x}px, ${y}px)`);
+      setStyle(elem, 'transform', `translate(${scale * x}px, ${scale * y}px) scale(${scale})`);
       if (isSVG) {
           const matrixValue = window.getComputedStyle(elem).getPropertyValue('transform');
           elem.setAttribute('transform', matrixValue);
@@ -392,13 +392,13 @@
       let isPanning = false;
       let lastAnimate = false;
       let dims = getDimensions(elem);
-      zoom(options.startScale, { animate: false });
+      zoom(options.startScale, { animate: false, force: true });
       // Wait for scale to update
       // for accurate dimensions
       // to constrain initial values
       setTimeout(() => {
           setMinMax();
-          pan(options.startX, options.startY, { animate: false });
+          pan(options.startX, options.startY, { animate: false, force: true });
       });
       function trigger(eventName, detail, opts) {
           if (opts.silent) {
@@ -421,9 +421,9 @@
                   lastAnimate = opts.animate;
               }
               opts.setTransform(elem, value, opts);
+              trigger(eventName, value, opts);
+              trigger('panzoomchange', value, opts);
           });
-          trigger(eventName, value, opts);
-          trigger('panzoomchange', value, opts);
           return value;
       }
       function setMinMax() {
@@ -434,8 +434,8 @@
               const parentHeight = dims.parent.height - dims.parent.border.top - dims.parent.border.bottom;
               // const elemWidth = dims.elem.width / scale
               // const elemHeight = dims.elem.height / scale
-              const elemWidth = dims.elem.width;
-              const elemHeight = dims.elem.height;
+              const elemWidth = dims.elem.width || 1;
+              const elemHeight = dims.elem.height || 1;
               const elemScaledWidth = parentWidth / elemWidth;
               const elemScaledHeight = parentHeight / elemHeight;
               if (options.contain === 'inside') {
@@ -460,49 +460,33 @@
           if (!opts.disableYAxis) {
               result.y = (opts.relative ? y : 0) + toY;
           }
-          if (opts.contain === 'inside') {
-              // const dims = getDimensions(elem)
-              result.x = Math.max(-dims.elem.margin.left - dims.parent.padding.left, Math.min(dims.parent.width -
-                  // dims.elem.width / toScale -
-                  dims.elem.width -
-                  dims.parent.padding.left -
-                  dims.elem.margin.left -
-                  dims.parent.border.left -
-                  dims.parent.border.right, result.x));
-              result.y = Math.max(-dims.elem.margin.top - dims.parent.padding.top, Math.min(dims.parent.height -
-                  // dims.elem.height / toScale -
-                  dims.elem.height -
-                  dims.parent.padding.top -
-                  dims.elem.margin.top -
-                  dims.parent.border.top -
-                  dims.parent.border.bottom, result.y));
-          }
-          else if (opts.contain === 'outside') {
-              // const dims = getDimensions(elem)
-              // const realWidth = dims.elem.width / scale
-              // const realHeight = dims.elem.height / scale
-              const realWidth = dims.elem.width;
-              const realHeight = dims.elem.height;
+          if (opts.contain) {
+              const realWidth = dims.elem.width / scale;
+              const realHeight = dims.elem.height / scale;
               const scaledWidth = realWidth * toScale;
               const scaledHeight = realHeight * toScale;
               const diffHorizontal = (scaledWidth - realWidth) / 2;
               const diffVertical = (scaledHeight - realHeight) / 2;
-              const minX = (-(scaledWidth - dims.parent.width) -
-                  dims.parent.padding.left -
-                  dims.parent.border.left -
-                  dims.parent.border.right +
-                  diffHorizontal) /
-                  toScale;
-              const maxX = (diffHorizontal - dims.parent.padding.left) / toScale;
-              result.x = Math.max(Math.min(result.x, maxX), minX);
-              const minY = (-(scaledHeight - dims.parent.height) -
-                  dims.parent.padding.top -
-                  dims.parent.border.top -
-                  dims.parent.border.bottom +
-                  diffVertical) /
-                  toScale;
-              const maxY = (diffVertical - dims.parent.padding.top) / toScale;
-              result.y = Math.max(Math.min(result.y, maxY), minY);
+              if (opts.contain === 'inside') {
+                  const minX = (-dims.elem.margin.left - dims.parent.padding.left + diffHorizontal) / toScale;
+                  const maxX = (dims.parent.width - scaledWidth - dims.parent.padding.left - dims.elem.margin.left - dims.parent.border.left - dims.parent.border.right + diffHorizontal) / toScale;
+                  result.x = Math.max(Math.min(result.x, maxX), minX);
+                  const minY = (-dims.elem.margin.top - dims.parent.padding.top + diffVertical) / toScale;
+                  const maxY = (dims.parent.height - scaledHeight - dims.parent.padding.top - dims.elem.margin.top - dims.parent.border.top - dims.parent.border.bottom + diffVertical) / toScale;
+                  result.y = Math.max(Math.min(result.y, maxY), minY);
+              }
+              else if (opts.contain === 'outside') {
+                  const minX = (-(scaledWidth - dims.parent.width) - dims.parent.padding.left - dims.parent.border.left - dims.parent.border.right + diffHorizontal) / toScale;
+                  const maxX = (diffHorizontal - dims.parent.padding.left) / toScale;
+                  result.x = Math.max(Math.min(result.x, maxX), minX);
+                  const minY = (-(scaledHeight - dims.parent.height) - dims.parent.padding.top - dims.parent.border.top - dims.parent.border.bottom + diffVertical) / toScale;
+                  const maxY = (diffVertical - dims.parent.padding.top) / toScale;
+                  result.y = Math.max(Math.min(result.y, maxY), minY);
+              }
+          }
+          if (opts.roundPixels) {
+              result.x = Math.round(result.x);
+              result.y = Math.round(result.y);
           }
           return result;
       }
@@ -517,10 +501,13 @@
       }
       function pan(toX, toY, panOptions, originalEvent) {
           const result = constrainXY(toX, toY, scale, panOptions);
-          const opts = result.opts;
-          x = result.x;
-          y = result.y;
-          return setTransformWithEvent('panzoompan', opts, originalEvent);
+          // Only try to set if the result is somehow different
+          if (x !== result.x || y !== result.y) {
+              x = result.x;
+              y = result.y;
+              return setTransformWithEvent('panzoompan', result.opts, originalEvent);
+          }
+          return { x, y, scale, isSVG, originalEvent };
       }
       function zoom(toScale, zoomOptions, originalEvent) {
           const result = constrainScale(toScale, zoomOptions);
@@ -615,18 +602,18 @@
               x: (clientX / effectiveArea.width) * (effectiveArea.width * toScale),
               y: (clientY / effectiveArea.height) * (effectiveArea.height * toScale)
           };
-          return zoom(toScale, { animate: false, ...zoomOptions, focal }, originalEvent);
+          return zoom(toScale, { ...zoomOptions, animate: false, focal }, originalEvent);
       }
       function zoomWithWheel(event, zoomOptions) {
           // Need to prevent the default here
           // or it conflicts with regular page scroll
           event.preventDefault();
-          const opts = { ...options, ...zoomOptions };
+          const opts = { ...options, ...zoomOptions, animate: false };
           // Normalize to deltaX in case shift modifier is used on Mac
           const delta = event.deltaY === 0 && event.deltaX ? event.deltaX : event.deltaY;
           const wheel = delta < 0 ? 1 : -1;
           const toScale = constrainScale(scale * Math.exp((wheel * opts.step) / 3), opts).scale;
-          return zoomToPoint(toScale, event, opts);
+          return zoomToPoint(toScale, event, opts, event);
       }
       function reset(resetOptions) {
           const opts = { ...options, animate: true, force: true, ...resetOptions };
@@ -663,7 +650,7 @@
           startScale = scale;
           startDistance = getDistance(pointers);
       }
-      function move(event) {
+      function handleMove(event) {
           if (!isPanning ||
               origX === undefined ||
               origY === undefined ||
@@ -682,7 +669,7 @@
               // to determine the current scale
               const diff = getDistance(pointers) - startDistance;
               const toScale = constrainScale((diff * options.step) / 80 + startScale).scale;
-              zoomToPoint(toScale, current);
+              zoomToPoint(toScale, current, { animate: false }, event);
           }
           else {
               // #512 added else condition to prevent mobile zoom focal point error
@@ -714,13 +701,13 @@
           }
           bound = true;
           onPointer('down', options.canvas ? parent : elem, handleDown);
-          onPointer('move', document, move, { passive: true });
+          onPointer('move', document, handleMove, { passive: true });
           onPointer('up', document, handleUp, { passive: true });
       }
       function destroy() {
           bound = false;
           destroyPointer('down', options.canvas ? parent : elem, handleDown);
-          destroyPointer('move', document, move);
+          destroyPointer('move', document, handleMove);
           destroyPointer('up', document, handleUp);
       }
       if (!options.noBind) {
@@ -733,6 +720,9 @@
           getPan: () => ({ x, y }),
           getScale: () => scale,
           getOptions: () => shallowClone(options),
+          handleDown,
+          handleMove,
+          handleUp,
           pan,
           reset,
           resetStyle,

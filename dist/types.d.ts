@@ -170,6 +170,14 @@ export interface PanOnlyOptions {
     relative?: boolean;
     /** Disable panning while the scale is equal to the starting value */
     panOnlyWhenZoomed?: boolean;
+    /** Round x and y values to whole numbers.
+     * This can help prevent images and text from looking blurry,
+     * but the higher the scale, the more it becomes
+     * necessary to use fractional pixels.
+     * Use your own judgement on how much to limit
+     * zooming in when using this option.
+     */
+    roundPixels?: boolean;
 }
 export interface ZoomOnlyOptions {
     /** Disable zooming functionality */
@@ -233,6 +241,29 @@ export interface PanzoomObject {
     getScale: () => number;
     /** Returns a _copy_ of the current options object */
     getOptions: () => PanzoomOptions;
+    /**
+     * handleDown, handleMove, and handleUp
+     * are the exact event handlers that Panzoom
+     * binds to pointer events. They are exposed
+     * in case you prefer to bind your own events
+     * or extend them.
+     * Note that move and up are bound to the document,
+     * not to the Panzoom element. Only the down event
+     * is bound to the Panzoom element.
+     * To avoid double binding, also set noBind to true.
+     *
+     * ```js
+     * const panzoom = Panzoom(elem, { noBind: true })
+     * elem.addEventListener('pointerdown', (event) => {
+     *   console.log(event)
+     *   panzoom.handleDown(event}
+     * })
+     * document.addEventListener('pointermove', panzoom.handleMove)
+     * document.addEventListener('pointerup', panzoom.handleUp)
+     */
+    handleDown: (event: PointerEvent) => void;
+    handleMove: (event: PointerEvent) => void;
+    handleUp: (event: PointerEvent) => void;
     /**
      * Pan the Panzoom element to the given x and y coordinates
      *

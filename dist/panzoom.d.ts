@@ -12,5 +12,5 @@ declare function Panzoom(elem: HTMLElement | SVGGraphicsElement, options?: Omit<
 declare namespace Panzoom {
     var defaultOptions: PanzoomOptions;
 }
-export { PanzoomObject, PanzoomOptions };
+export * from './types';
 export default Panzoom;
