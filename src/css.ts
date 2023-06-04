@@ -34,6 +34,12 @@ import {CurrentValues, PanzoomOptions} from './types'
 //   }
 // }
 
+// CSS Typed OM support
+const doCSSTOM = window.CSS && CCS.number;
+const scaleValue: CSSScale | false = doCSSTOM && new CSSScale(CSS.number(1));
+const translateValue: CSSTranslate | false = doCSSTOM && new CSSTranslate(CSS.px(0), CSS.px(0));
+const transform: CSSTransformValue | false = doCSSTOM && new CSSTransformValue([scaleValue, translateValue]);
+
 /**
  * Gets a style value expected to be a number
  */
@@ -85,11 +91,33 @@ export function setTransform(
   { x, y, scale, isSVG }: CurrentValues,
   _options?: PanzoomOptions
 ) {
-  setStyle(elem, 'transform', `translate(${scale * x}px, ${scale * y}px) scale(${scale})`)
+  if (doCSSTOM) {
+    setTransformCSSTOM(elem, x, y, scale);
+  }
+  else {
+    setStyle(elem, 'transform', `translate(${scale * x}px, ${scale * y}px) scale(${scale})`)
+  }
   if (isSVG) {
+    // VERIFY: This seems really inefficient and I'm not sure why it's needed for SVG.
+    // The transform above is evaluated on the element in CSS and then copied as a matrix back to the SVG attribute.
+    // Is the CSS transform ignored for SVG?
+    // Updating the SVG matrix directly would be more efficient.
     const matrixValue = window.getComputedStyle(elem).getPropertyValue('transform')
     elem.setAttribute('transform', matrixValue)
   }
+}
+
+function setTransformCSSTOM(
+  elem: HTMLElement | SVGElement,
+  x: number,
+  y: number,
+  scale: number
+) {
+  (scaleValue as CSSScale).x = scale;
+  (scaleValue as CSSScale).y = scale;
+  (translateValue as CSSTranslate).x = x;
+  (translateValue as CSSTranslate).y = y;
+  elem.attributeStyleMap.set("transform", transform);
 }
 
 /**
