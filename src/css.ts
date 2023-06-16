@@ -35,16 +35,10 @@ import {CurrentValues, PanzoomOptions} from './types'
 // }
 
 // CSS Typed OM support
-const doCSSTOM = !!window.CSS && !!CCS.number;
-const scaleValue: CSSScale | null = null;
-const translateValue: CSSTranslate | null = null;
-const transformValue: CSSTransformValue | null = null;
-
-if (doCSSTOM) {
-  this.scaleValue = new CSSScale(CSS.number(1), CSS.number(1));
-  this.translateValue = new CSSTranslate(CSS.px(0), CSS.px(0));
-  this.transformValue = new CSSTransformValue([scaleValue, translateValue]);
-}
+const doCSSTOM = !!window.CSS && !!CSS.number;
+const scaleValue: CSSScale | null = doCSSTOM ? new CSSScale(CSS.number(1), CSS.number(1)) : null;
+const translateValue: CSSTranslate | null = doCSSTOM ? new CSSTranslate(CSS.px(0), CSS.px(0)) : null;
+const transformValue: CSSTransformValue | null = doCSSTOM ? new CSSTransformValue([scaleValue, translateValue]) : null;
 
 /**
  * Gets a style value expected to be a number
@@ -123,7 +117,7 @@ function setTransformCSSTOM(
   (scaleValue!.y as CSSUnitValue).value = scale;
   (translateValue!.x as CSSUnitValue).value = x;
   (translateValue!.y as CSSUnitValue).value = y;
-  elem.attributeStyleMap.set("transform", transform);
+  elem.attributeStyleMap.set("transform", transformValue);
 }
 
 /**
