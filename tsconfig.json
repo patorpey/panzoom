@@ -2,6 +2,7 @@
   "exclude": ["dist"],
   "include": ["src", "test/unit"],
   "compilerOptions": {
+    "lib": ["DOM", "ES2021", "DOM.Iterable"],
     "alwaysStrict": true,
     "esModuleInterop": true,
     "module": "esnext",
