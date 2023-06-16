@@ -38,7 +38,7 @@ import {CurrentValues, PanzoomOptions} from './types'
 const doCSSTOM = !!window.CSS && !!CSS.number;
 const scaleValue: CSSScale | null = doCSSTOM ? new CSSScale(CSS.number(1), CSS.number(1)) : null;
 const translateValue: CSSTranslate | null = doCSSTOM ? new CSSTranslate(CSS.px(0), CSS.px(0)) : null;
-const transformValue: CSSTransformValue | null = doCSSTOM ? new CSSTransformValue([scaleValue, translateValue]) : null;
+const transformValue: CSSTransformValue | null = doCSSTOM ? new CSSTransformValue([translateValue, scaleValue]) : null;
 
 /**
  * Gets a style value expected to be a number
@@ -92,7 +92,7 @@ export function setTransform(
   _options?: PanzoomOptions
 ) {
   if (doCSSTOM) {
-    setTransformCSSTOM(elem, x, y, scale);
+    setTransformCSSTOM(elem, scale * x, scale * y, scale);
   }
   else {
     setStyle(elem, 'transform', `translate(${scale * x}px, ${scale * y}px) scale(${scale})`)

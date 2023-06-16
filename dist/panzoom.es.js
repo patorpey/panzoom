@@ -39,7 +39,7 @@
 const doCSSTOM = !!window.CSS && !!CSS.number;
 const scaleValue = doCSSTOM ? new CSSScale(CSS.number(1), CSS.number(1)) : null;
 const translateValue = doCSSTOM ? new CSSTranslate(CSS.px(0), CSS.px(0)) : null;
-const transformValue = doCSSTOM ? new CSSTransformValue([scaleValue, translateValue]) : null;
+const transformValue = doCSSTOM ? new CSSTransformValue([translateValue, scaleValue]) : null;
 /**
  * Gets a style value expected to be a number
  */
@@ -80,7 +80,7 @@ function setTransition(elem, options) {
  */
 function setTransform(elem, { x, y, scale, isSVG }, _options) {
     if (doCSSTOM) {
-        setTransformCSSTOM(elem, x, y, scale);
+        setTransformCSSTOM(elem, scale * x, scale * y, scale);
     }
     else {
         setStyle(elem, 'transform', `translate(${scale * x}px, ${scale * y}px) scale(${scale})`);
