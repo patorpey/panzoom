@@ -1,5 +1,5 @@
 import { setTransform } from './css';
-export declare type PanzoomEvent = 'panzoomstart' | 'panzoomchange' | 'panzoompan' | 'panzoomzoom' | 'panzoomreset' | 'panzoomend';
+export type PanzoomEvent = 'panzoomstart' | 'panzoomchange' | 'panzoompan' | 'panzoomzoom' | 'panzoomreset' | 'panzoomend';
 export interface PanzoomEventDetail {
     x: number;
     y: number;
@@ -203,9 +203,9 @@ export interface ZoomOnlyOptions {
     /** The step affects zoom calculation when zooming with a mouse wheel, when pinch zooming, or when using zoomIn/zoomOut */
     step?: number;
 }
-export declare type PanOptions = MiscOptions & PanOnlyOptions;
-export declare type ZoomOptions = MiscOptions & ZoomOnlyOptions;
-export declare type PanzoomOptions = PanOptions & ZoomOptions & MiscOptions;
+export type PanOptions = MiscOptions & PanOnlyOptions;
+export type ZoomOptions = MiscOptions & ZoomOnlyOptions;
+export type PanzoomOptions = PanOptions & ZoomOptions & MiscOptions;
 export interface CurrentValues {
     x: number;
     y: number;

@@ -1,11 +1,5 @@
 import { CurrentValues, PanzoomOptions } from './types';
 /**
- * Lazy creation of a CSS style declaration
- */
-/**
- * Proper prefixing for cross-browser compatibility
- */
-/**
  * Gets a style value expected to be a number
  */
 export declare function getCSSNum(name: string, style: CSSStyleDeclaration): number;
